@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">StoryApp</string>
+    <string name="login">Masuk</string>
+    <string name="register">Daftar</string>
+    <string name="email">E-Mail</string>
+    <string name="password">Sandi</string>
+    <string name="name">Nama</string>
+    <string name="message_login_page">Fill Your Details</string>
+    <string name="title_welcome_page">STORY APP</string>
+    <string name="message_welcome_page">Share Your Story</string>
+    <string name="description">Deskripsi</string>
+    <string name="desc_upload">Isi deskripsi gambarmu!</string>
+    <string name="camera">Kamera</string>
+    <string name="gallery">Galeri</string>
+    <string name="upload">Unggah</string>
+</resources>
