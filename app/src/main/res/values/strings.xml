@@ -13,4 +13,7 @@
     <string name="camera">Kamera</string>
     <string name="gallery">Galeri</string>
     <string name="upload">Unggah</string>
+    <string name="logout">Keluar</string>
+    <string name="detail">Detail</string>
+    <string name="add">Unggah</string>
 </resources>

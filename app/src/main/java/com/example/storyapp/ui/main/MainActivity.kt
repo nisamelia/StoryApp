@@ -3,88 +3,23 @@ package com.example.storyapp.ui.main
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.storyapp.R
 import com.example.storyapp.ui.factory.StoryViewModelFactory
 import com.example.storyapp.data.response.ListStoryItem
 import com.example.storyapp.databinding.ActivityMainBinding
 import com.example.storyapp.ui.add.AddStoryActivity
 import com.example.storyapp.ui.factory.AuthViewModelFactory
 import com.example.storyapp.ui.welcome.WelcomeActivity
-
-//class MainActivity : AppCompatActivity() {
-//    private val viewModel by viewModels<MainViewModel> {
-//        ViewModelFactory.getInstance(this)
-//    }
-//    private lateinit var binding: ActivityMainBinding
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//
-//        val layoutManager = LinearLayoutManager(this)
-//        binding.rvStory.layoutManager = layoutManager
-//
-//        val itemDecoration = DividerItemDecoration(this, layoutManager.orientation)
-//        binding.rvStory.addItemDecoration(itemDecoration)
-//
-//        viewModel.getSession().observe(this) {
-//            user ->
-//            if (!user.isLogin) {
-//                startActivity(Intent(this, WelcomeActivity::class.java))
-//                finish()
-//            }
-//        }
-//
-//        val mainViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(
-//            MainViewModel::class.java)
-//        mainViewModel.story.observe(this){ story ->
-//            setStory(story)
-//        }
-//
-//        setupView()
-//        setupAction()
-//    }
-//
-//    private fun setupView() {
-//        @Suppress("DEPRECATION")
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            window.insetsController?.hide(WindowInsets.Type.statusBars())
-//        } else {
-//            window.setFlags(
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN
-//            )
-//        }
-//        supportActionBar?.hide()
-//    }
-//
-//    private fun setupAction() {
-//        binding.btnLogout.setOnClickListener {
-//            viewModel.logout()
-//        }
-//    }
-//
-//    private fun setStory(story: List<ListStoryItem>){
-//        val adapter = UserAdapter()
-//        adapter.submitList(story)
-//        binding.rvStory.adapter = adapter // Attach adapter to RecyclerView
-//
-//        adapter.setOnItemClickCallback(object : UserAdapter.OnItemClickCallback {
-//            override fun onItemClicked(data: ListStoryItem) {
-//                // Handle item click if needed
-//            }
-//        })
-//    }
-//}
 
 class MainActivity : AppCompatActivity() {
     private val mainViewModel by viewModels<MainViewModel> {
@@ -161,18 +96,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupAction() {
-        binding.btnLogout.setOnClickListener {
-            mainViewModel.logout()
-        }
+        binding.materialToolbar.setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener, androidx.appcompat.widget.Toolbar.OnMenuItemClickListener {
+            override fun onMenuItemClick(item: MenuItem): Boolean {
+                return when (item.itemId) {
+                    R.id.btnLogout -> {
+                        mainViewModel.logout()
+                        true
+                    }
+                    else -> {
+                        false
+                    }
+                }
+            }
+        })
+
+//        binding.btnLogout.setOnClickListener {
+//            mainViewModel.logout()
+//        }
     }
 
-//    private fun observeStories() {
-//        viewModel.story.observe(this) { storyResponse ->
-//            if (!storyResponse.error) {
-//                adapter.submitList(storyResponse.listStory)
-//            } else {
-//                Toast.makeText(this, storyResponse.message ?: "Error fetching stories", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
 }

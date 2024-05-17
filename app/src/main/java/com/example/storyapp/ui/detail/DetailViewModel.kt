@@ -19,6 +19,7 @@ class DetailViewModel(private val repository: StoryRepository) : ViewModel() {
     fun setDetail(id: String) {
         _isLoading.value = true
         try {
+            _isLoading.value = true
             viewModelScope.launch {
                 val detailStory = repository.setDetail(id)
                 _detail.value = detailStory
