@@ -10,8 +10,7 @@ import kotlinx.coroutines.launch
 
 class DetailViewModel(private val repository: StoryRepository) : ViewModel() {
     private val _detail = MutableLiveData<DetailResponse>()
-//    private val _detailStory = MutableLiveData<Story>()
-    val detail : LiveData<DetailResponse> = _detail
+    val detail: LiveData<DetailResponse> = _detail
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -24,14 +23,10 @@ class DetailViewModel(private val repository: StoryRepository) : ViewModel() {
                 val detailStory = repository.setDetail(id)
                 _detail.value = detailStory
             }
-        } catch (e:Exception) {
-            _detail.value = DetailResponse(true, e.message )
+        } catch (e: Exception) {
+            _detail.value = DetailResponse(true, e.message)
         } finally {
             _isLoading.value = false
         }
     }
-
-//    fun getDetail(): LiveData<Story> {
-//        return _detailStory
-//    }
 }

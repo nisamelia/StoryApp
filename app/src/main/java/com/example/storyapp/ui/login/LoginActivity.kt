@@ -1,15 +1,16 @@
 package com.example.storyapp.ui.login
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.storyapp.ui.factory.StoryViewModelFactory
 import com.example.storyapp.data.model.UserModel
 import com.example.storyapp.databinding.ActivityLoginBinding
 import com.example.storyapp.ui.factory.AuthViewModelFactory
@@ -30,15 +31,18 @@ class LoginActivity : AppCompatActivity() {
 
         setupView()
         setupAction()
+        playAnimation()
 
-        //TODO: INI DITAMBAH
-        viewModel.isLoading.observe(this) {
-            isLoading ->
+        viewModel.isLoading.observe(this) { isLoading ->
             if (isLoading) {
                 binding.loginProgress.visibility = View.VISIBLE
             } else {
                 binding.loginProgress.visibility = View.GONE
             }
+        }
+
+        viewModel.isError.observe(this) {isError ->
+            Toast.makeText(this, isError, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -55,41 +59,39 @@ class LoginActivity : AppCompatActivity() {
         supportActionBar?.hide()
     }
 
+    private fun playAnimation() {
+        ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X, -30f, 30f).apply {
+            duration = 6000
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }.start()
+    }
+
     private fun setupAction() {
         binding.loginButton.setOnClickListener {
             val email = binding.edLoginEmail.text.toString()
             val password = binding.edLoginPassword.text.toString()
-
-            // Lakukan validasi email dan password di sini jika diperlukan
-//            login()
             viewModel.saveLogin(email, password)
-//            showSuccessDialog()
-            // Amati hasil login dari ViewModel
             viewModel.loginResult.observe(this) { response ->
                 if (!response.error!!) {
                     val token = response.loginResult?.token
                     if (token != null) {
                         val userModel = UserModel(email, token, true)
                         viewModel.saveSession(userModel)
-
-                        // Tampilkan dialog sukses
                         showSuccessDialog()
+                    } else {
+                        showErrorDialog()
                     }
-//                    showSuccessDialog()
-                } else {
-                    // Tampilkan dialog error jika login gagal
-                    showErrorDialog()
                 }
             }
-//            viewModel.saveLogin(email, password)
         }
     }
 
     private fun showSuccessDialog() {
         AlertDialog.Builder(this).apply {
-            setTitle("Success")
-            setMessage("You have successfully logged in.")
-            setPositiveButton("Continue") { _, _ ->
+            setTitle("Sukses")
+            setMessage("Yeay, Kamu Berhasil Masuk")
+            setPositiveButton("Lanjut") { _, _ ->
                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
@@ -102,21 +104,9 @@ class LoginActivity : AppCompatActivity() {
 
     private fun showErrorDialog() {
         AlertDialog.Builder(this).apply {
-            setTitle("Error")
-            setMessage("Login failed. Please check your credentials and try again.")
-            setPositiveButton("OK") { _, _ -> }
-            create()
-            show()
-        }
-    }
-
-
-    private fun login(){
-        binding.apply {
-            viewModel.saveLogin(
-                edLoginEmail.text.toString(),
-                edLoginPassword.text.toString()
-            )
+            setNegativeButton("Masuk Gagal") { _, _ ->
+                Toast.makeText(context, "Masuk Gagal", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

@@ -8,11 +8,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.storyapp.R
 import com.example.storyapp.databinding.ActivityWelcomeBinding
 import com.example.storyapp.ui.login.LoginActivity
 import com.example.storyapp.ui.register.RegisterActivity
@@ -67,7 +63,7 @@ class WelcomeActivity : AppCompatActivity() {
     }
 
 
-    private fun setupAction(){
+    private fun setupAction() {
         binding.loginButton.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }

@@ -8,17 +8,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.storyapp.R
 import com.example.storyapp.data.api.ApiConfig
 import com.example.storyapp.data.pref.UserPreferences
 import com.example.storyapp.data.pref.dataStore
@@ -27,9 +21,7 @@ import com.example.storyapp.data.utils.getImageUri
 import com.example.storyapp.data.utils.reduceFileImage
 import com.example.storyapp.data.utils.uriToFile
 import com.example.storyapp.databinding.ActivityAddStoryBinding
-import com.example.storyapp.ui.factory.StoryViewModelFactory
 import com.example.storyapp.ui.main.MainActivity
-import com.example.storyapp.ui.main.MainViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -40,21 +32,17 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 
 class AddStoryActivity : AppCompatActivity() {
-    private val addViewModel by viewModels<AddViewModel> {
-        StoryViewModelFactory.getInstance(this)
-    }
     private lateinit var binding: ActivityAddStoryBinding
     private var currentImageUri: Uri? = null
 
     private val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
-        ) {
-            isGranted: Boolean ->
+        ) { isGranted: Boolean ->
             if (isGranted) {
-                Toast.makeText(this, "Permission request granted", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Kamera Diizinkan", Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(this, "Permission request denied", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Kamera Tidak Diizinkan", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -76,12 +64,8 @@ class AddStoryActivity : AppCompatActivity() {
 
         binding.cameraButton.setOnClickListener { startCamera() }
         binding.galleryButton.setOnClickListener { startGallery() }
-        binding.uploadButton.setOnClickListener { startUpload() }
+        binding.buttonAdd.setOnClickListener { startUpload() }
     }
-
-//    private fun startUpload() {
-//        TODO("Not yet implemented")
-//    }
 
     private fun startCamera() {
         currentImageUri = getImageUri(this)
@@ -90,8 +74,7 @@ class AddStoryActivity : AppCompatActivity() {
 
     private val launcherIntentCamera = registerForActivityResult(
         ActivityResultContracts.TakePicture()
-    ) {
-        isSuccess ->
+    ) { isSuccess ->
         if (isSuccess) {
             showImage()
         }
@@ -103,8 +86,7 @@ class AddStoryActivity : AppCompatActivity() {
 
     private val launcherGallery = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
-    ) {
-        uri: Uri? ->
+    ) { uri: Uri? ->
         if (uri != null) {
             currentImageUri = uri
             showImage()
@@ -124,7 +106,7 @@ class AddStoryActivity : AppCompatActivity() {
         currentImageUri?.let { uri ->
             val imageFile = uriToFile(uri, this).reduceFileImage()
             Log.d("Image File", "showImage: ${imageFile.path}")
-            val description = binding.textInputEditText.text.toString()
+            val description = binding.edAddDescription.text.toString()
             showLoading(true)
 
             val requestBody = description.toRequestBody("text/plain".toMediaType())
@@ -135,61 +117,35 @@ class AddStoryActivity : AppCompatActivity() {
                 requestImageFile
             )
 
-            //TODO: DARI VIEW MODEL
             lifecycleScope.launch {
                 try {
-//                showLoading(true)
                     val userPreferences = UserPreferences.getInstance(dataStore)
                     val token = userPreferences.getSession().first().token
 
-                if (token.isNotEmpty()) {
-                    val apiService = ApiConfig.getApiService(token)
-                    val successResponse = apiService.uploadImage(multipartBody, requestBody)
-                    showToast(successResponse.message)
+                    if (token.isNotEmpty()) {
+                        val apiService = ApiConfig.getApiService(token)
+                        val successResponse = apiService.uploadImage(multipartBody, requestBody)
+                        showToast(successResponse.message)
+                        showLoading(false)
+                    } else {
+                        showToast("Token is missing")
+                    }
+                } catch (e: HttpException) {
+                    val errorBody = e.response()?.errorBody()?.string()
+                    val errorResponse = Gson().fromJson(errorBody, AddStoryResponse::class.java)
+                    showToast(errorResponse.message)
                     showLoading(false)
-                } else {
-                    showToast("Token is missing")
                 }
-            } catch (e: HttpException) {
-                val errorBody = e.response()?.errorBody()?.string()
-                val errorResponse = Gson().fromJson(errorBody, AddStoryResponse::class.java)
-                showToast(errorResponse.message)
-                    showLoading(false)
-//                onError(errorResponse.message)
-            }
                 moveMain()
             }
         } ?: showToast("Kosong")
     }
 
-//    private fun startUpload() {
-//        val description = binding.textInputEditText.text.toString()
-//        addViewModel.uploadStory(
-//            currentImageUri,
-//            this,
-//            description,
-//            showLoading = { isLoading ->
-//                // Tampilkan atau sembunyikan loading indicator
-//            },
-//            showToast = { message ->
-//                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-//                moveMain()
-////                if (message.contains("success", true)) {
-////                    moveMain()
-////                }
-//            },
-//            onError = { errorMessage ->
-//                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
-//            }
-//        )
-//    }
-
-    private fun moveMain(){
+    private fun moveMain() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
     }
-
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

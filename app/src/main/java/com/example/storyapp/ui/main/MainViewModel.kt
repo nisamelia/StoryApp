@@ -19,17 +19,17 @@ class MainViewModel(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    fun getSession() : LiveData<UserModel> {
+    fun getSession(): LiveData<UserModel> {
         return repository.getSession().asLiveData()
     }
 
-    fun logout(){
+    fun logout() {
         viewModelScope.launch {
             repository.logout()
         }
     }
 
-    fun setStories(){
+    fun setStories() {
         _isLoading.value = true
         viewModelScope.launch {
             try {

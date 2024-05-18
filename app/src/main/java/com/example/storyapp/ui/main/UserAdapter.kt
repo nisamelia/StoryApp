@@ -19,15 +19,16 @@ class UserAdapter : ListAdapter<ListStoryItem, UserAdapter.MyViewHolder>(DIFF_CA
     }
 
 
-    inner class MyViewHolder(val binding: StoryListBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: ListStoryItem){
-            Glide.with(binding.imgStory.context)
+    inner class MyViewHolder(private val binding: StoryListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: ListStoryItem) {
+            Glide.with(binding.ivItemPhoto.context)
                 .load(item.photoUrl)
-                .into(binding.imgStory)
+                .into(binding.ivItemPhoto)
             binding.tvUser.text = item.name
-            binding.tvDesc.text = item.description
-            binding.root.setOnClickListener{
-                onItemClickCallback?.onItemClicked(item)
+            binding.tvItemName.text = item.description
+            binding.root.setOnClickListener {
+                onItemClickCallback.onItemClicked(item)
             }
         }
 
@@ -58,12 +59,16 @@ class UserAdapter : ListAdapter<ListStoryItem, UserAdapter.MyViewHolder>(DIFF_CA
         }
     }
 
-    companion object{
-        val DIFF_CALLBACK = object: DiffUtil.ItemCallback<ListStoryItem>(){
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListStoryItem>() {
             override fun areItemsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
                 return oldItem == newItem
             }
-            override fun areContentsTheSame(oldItem: ListStoryItem, newItem: ListStoryItem): Boolean {
+
+            override fun areContentsTheSame(
+                oldItem: ListStoryItem,
+                newItem: ListStoryItem
+            ): Boolean {
                 return oldItem == newItem
             }
         }

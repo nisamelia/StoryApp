@@ -1,7 +1,6 @@
 package com.example.storyapp.customview
 
 import android.content.Context
-import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,13 +17,15 @@ class MyEditText @JvmOverloads constructor(
     private var clearButtonImage: Drawable
 
     init {
-        clearButtonImage = ContextCompat.getDrawable(context, R.drawable.baseline_close_24) as Drawable
+        clearButtonImage =
+            ContextCompat.getDrawable(context, R.drawable.baseline_close_24) as Drawable
         setOnTouchListener(this)
 
         addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
                 // Do nothing.
             }
+
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (s.toString().length < 8) {
                     setError("Password tidak boleh kurang dari 8 karakter", null)
@@ -32,23 +33,17 @@ class MyEditText @JvmOverloads constructor(
                     error = null
                 }
             }
+
             override fun afterTextChanged(s: Editable) {
                 // Do nothing.
             }
         })
     }
 
-    //function onDraw untuk mengatur attribute kelas
-//    override fun onDraw(canvas: Canvas) {
-//        super.onDraw(canvas)
-//        hint = "cek"
-//        textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-//    }
-
-    //aksi tombol ketika diklik
     private fun showClearButton() {
         setButtonDrawables(endOfTheText = clearButtonImage)
     }
+
     private fun hideClearButton() {
         setButtonDrawables()
     }
@@ -58,7 +53,7 @@ class MyEditText @JvmOverloads constructor(
         topOfTheText: Drawable? = null,
         endOfTheText: Drawable? = null,
         bottomOfTheText: Drawable? = null
-    ){
+    ) {
         setCompoundDrawablesWithIntrinsicBounds(
             startOfTheText,
             topOfTheText,
@@ -86,18 +81,26 @@ class MyEditText @JvmOverloads constructor(
             if (isClearButtonClicked) {
                 when (event!!.action) {
                     MotionEvent.ACTION_DOWN -> {
-                        clearButtonImage = ContextCompat.getDrawable(context, R.drawable.baseline_close_24) as Drawable
+                        clearButtonImage = ContextCompat.getDrawable(
+                            context,
+                            R.drawable.baseline_close_24
+                        ) as Drawable
                         showClearButton()
                         return true
                     }
+
                     MotionEvent.ACTION_UP -> {
-                        clearButtonImage = ContextCompat.getDrawable(context, R.drawable.baseline_close_24) as Drawable
+                        clearButtonImage = ContextCompat.getDrawable(
+                            context,
+                            R.drawable.baseline_close_24
+                        ) as Drawable
                         when {
                             text != null -> text?.clear()
                         }
                         hideClearButton()
                         return true
                     }
+
                     else -> return false
                 }
             } else return false

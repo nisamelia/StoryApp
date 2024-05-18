@@ -8,7 +8,6 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -18,7 +17,6 @@ import com.example.storyapp.ui.factory.StoryViewModelFactory
 import com.example.storyapp.data.response.ListStoryItem
 import com.example.storyapp.databinding.ActivityMainBinding
 import com.example.storyapp.ui.add.AddStoryActivity
-import com.example.storyapp.ui.factory.AuthViewModelFactory
 import com.example.storyapp.ui.welcome.WelcomeActivity
 
 class MainActivity : AppCompatActivity() {
@@ -44,10 +42,9 @@ class MainActivity : AppCompatActivity() {
             intent = Intent(this, AddStoryActivity::class.java)
             startActivity(intent)
         }
-        //TODO: INI DIGANTI
-        mainViewModel.isLoading.observe(this) {
-            isLoading ->
-            if(isLoading){
+
+        mainViewModel.isLoading.observe(this) { isLoading ->
+            if (isLoading) {
                 binding.listProgress.visibility = View.VISIBLE
             } else {
                 binding.listProgress.visibility = View.GONE
@@ -67,7 +64,11 @@ class MainActivity : AppCompatActivity() {
             if (!storyResponse.error) {
                 adapter.submitList(storyResponse.listStory)
             } else {
-                Toast.makeText(this, storyResponse.message ?: "Error fetching stories", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    storyResponse.message ?: "Error fetching stories",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
         setupView()
@@ -96,23 +97,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupAction() {
-        binding.materialToolbar.setOnMenuItemClickListener(object : MenuItem.OnMenuItemClickListener, androidx.appcompat.widget.Toolbar.OnMenuItemClickListener {
+        binding.materialToolbar.setOnMenuItemClickListener(object :
+            MenuItem.OnMenuItemClickListener,
+            androidx.appcompat.widget.Toolbar.OnMenuItemClickListener {
             override fun onMenuItemClick(item: MenuItem): Boolean {
                 return when (item.itemId) {
                     R.id.btnLogout -> {
                         mainViewModel.logout()
                         true
                     }
+
                     else -> {
                         false
                     }
                 }
             }
         })
-
-//        binding.btnLogout.setOnClickListener {
-//            mainViewModel.logout()
-//        }
     }
 
 }

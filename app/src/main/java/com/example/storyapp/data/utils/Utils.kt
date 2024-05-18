@@ -23,7 +23,7 @@ private const val MAX_SIZE = 100000
 private const val FILE_NAME = "yyyyMMdd_HHmmss"
 private val timeStamp: String = SimpleDateFormat(FILE_NAME, Locale.US).format(Date())
 
-fun getImageUri(context: Context) : Uri {
+fun getImageUri(context: Context): Uri {
     var uri: Uri? = null
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val contentValues = ContentValues().apply {
@@ -50,12 +50,12 @@ fun getImageForPreQ(context: Context): Uri {
     )
 }
 
-fun createCustomTempFile(context: Context) : File {
+fun createCustomTempFile(context: Context): File {
     val filesDir = context.externalCacheDir
     return File.createTempFile(timeStamp, ".jpg", filesDir)
 }
 
-fun uriToFile(imageUri: Uri, context: Context) : File {
+fun uriToFile(imageUri: Uri, context: Context): File {
     //temporary file
     val myFile = createCustomTempFile(context)
     //membaca data dari uri gambar
@@ -72,23 +72,23 @@ fun uriToFile(imageUri: Uri, context: Context) : File {
 }
 
 //reduce image size
-fun File.reduceFileImage() : File {
+fun File.reduceFileImage(): File {
     val file = this
     val bitmap = BitmapFactory.decodeFile(file.path).getRotatedBitmap(file)
     var compressQuality = 100
     var streamLength: Int
     do {
         val bmpStream = ByteArrayOutputStream()
-        bitmap?.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, bmpStream)
         val bmpPicByteArray = bmpStream.toByteArray()
         streamLength = bmpPicByteArray.size
         compressQuality -= 5
     } while (streamLength > MAX_SIZE)
-    bitmap?.compress(Bitmap.CompressFormat.JPEG, compressQuality, FileOutputStream(file))
+    bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, FileOutputStream(file))
     return file
 }
 
-fun Bitmap.getRotatedBitmap(file: File): Bitmap? {
+fun Bitmap.getRotatedBitmap(file: File): Bitmap {
     val orientation = ExifInterface(file).getAttributeInt(
         ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED
     )
@@ -101,7 +101,7 @@ fun Bitmap.getRotatedBitmap(file: File): Bitmap? {
     }
 }
 
-fun rotateImage(source: Bitmap, angle: Float): Bitmap? {
+fun rotateImage(source: Bitmap, angle: Float): Bitmap {
     val matrix = Matrix()
     matrix.postRotate(angle)
     return Bitmap.createBitmap(

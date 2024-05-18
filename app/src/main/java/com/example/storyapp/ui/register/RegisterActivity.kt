@@ -1,26 +1,25 @@
 package com.example.storyapp.ui.register
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.storyapp.ui.factory.StoryViewModelFactory
 import com.example.storyapp.databinding.ActivityRegisterBinding
 import com.example.storyapp.ui.factory.AuthViewModelFactory
 import com.example.storyapp.ui.login.LoginActivity
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
-//    private lateinit var factory: ViewModelFactory
-//    private val registerViewModel: RegisterViewModel by viewModels { factory }
     private val registerViewModel by viewModels<RegisterViewModel> {
         AuthViewModelFactory.getInstance(this)
-}
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,16 +28,27 @@ class RegisterActivity : AppCompatActivity() {
 
         setupView()
         setupAction()
+        playAnimation()
 
-        //TODO: INI DIUBAH
-        registerViewModel.isLoading.observe(this){
-            isLoading ->
+        registerViewModel.isLoading.observe(this) { isLoading ->
             if (isLoading) {
                 binding.registerProgress.visibility = View.VISIBLE
             } else {
                 binding.registerProgress.visibility = View.GONE
             }
         }
+
+        registerViewModel.errorReg.observe(this) { isError: String ->
+            Toast.makeText(this, isError, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun playAnimation() {
+        ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X, -30f, 30f).apply {
+            duration = 6000
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }.start()
     }
 
     private fun setupView() {
@@ -55,42 +65,24 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun setupAction() {
-        binding.signupButton.setOnClickListener {
-//            val name = binding.edRegisterName.text.toString()
-//            val email = binding.edRegisterEmail.text.toString()
-//            val password = binding.edRegisterPassword.toString()
-            postRegister()
-            //TODO: INI DIGANTI
-            registerViewModel.registerResult.observe(this) {
-                response ->
+    binding.signupButton.setOnClickListener {
+        postRegister()
+
+        // Observe the register result
+        registerViewModel.registerResult.observe(this) { response ->
+            if (response != null) {
                 if (!response.error!!) {
                     showSuccessDialog()
                 } else {
-                    showErrorDialog()
+                    val errorMessage = response.message ?: "Error occurred"
+                    showToast(errorMessage)
                 }
+            } else {
+                showToast("Unexpected error")
             }
-//            AlertDialog.Builder(this).apply {
-//                setTitle("Yeah!")
-//                setMessage("Akun dengan $email sudah jadi nih. Yuk, login dan belajar coding.")
-//                setPositiveButton("Lanjut") { _, _ ->
-//                    loginActivity()
-//                    finish()
-//                }
-//                create()
-//                show()
-//            }
         }
     }
-
-//    private fun loginActivity() {
-//        registerViewModel.registerResponse.observe(this@RegisterActivity) {
-//            reponse ->
-//            if (reponse.error == false) {
-//                startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
-//                finish()
-//            }
-//        }
-//    }
+}
 
     private fun loginActivity() {
         startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
@@ -111,15 +103,6 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun showErrorDialog() {
-        AlertDialog.Builder(this).apply {
-            setTitle("Error")
-            setMessage("Login failed. Please check your credentials and try again.")
-            setPositiveButton("OK") { _, _ -> }
-            create()
-            show()
-        }
-    }
     private fun postRegister() {
         binding.apply {
             registerViewModel.setRegister(
@@ -128,12 +111,9 @@ class RegisterActivity : AppCompatActivity() {
                 edRegisterPassword.text.toString().trim()
             )
         }
-//        registerViewModel.registerResponse.observe(this@RegisterActivity) {
-//                reponse ->
-//            if (reponse.error == false) {
-//                startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
-//                finish()
-//            }
-//        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
