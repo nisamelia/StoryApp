@@ -3,6 +3,7 @@ package com.example.storyapp.ui.main
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,7 @@ import com.example.storyapp.data.response.ListStoryItem
 import com.example.storyapp.databinding.StoryListBinding
 import com.example.storyapp.ui.detail.DetailActivity
 
-class UserAdapter : ListAdapter<ListStoryItem, UserAdapter.MyViewHolder>(DIFF_CALLBACK) {
+class UserAdapter : PagingDataAdapter<ListStoryItem, UserAdapter.MyViewHolder>(DIFF_CALLBACK) {
     private lateinit var onItemClickCallback: OnItemClickCallback
 
     fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
@@ -41,17 +42,20 @@ class UserAdapter : ListAdapter<ListStoryItem, UserAdapter.MyViewHolder>(DIFF_CA
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
-        holder.itemView.setOnClickListener {
-            onItemClickCallback.onItemClicked(item)
-            val detailIntent = Intent(holder.itemView.context, DetailActivity::class.java).also {
-                it.putExtra(DetailActivity.EXTRA_ID, item.id)
-                it.putExtra(DetailActivity.EXTRA_NAME, item.name)
-                it.putExtra(DetailActivity.EXTRA_DESC, item.description)
-                it.putExtra(DetailActivity.EXTRA_PICT, item.photoUrl)
-            }
-            holder.itemView.context.startActivity(detailIntent)
+        if (item != null) {
+            holder.bind(item)
         }
+//        holder.bind(item)
+//        holder.itemView.setOnClickListener {
+//            onItemClickCallback.onItemClicked(item)
+//            val detailIntent = Intent(holder.itemView.context, DetailActivity::class.java).also {
+//                it.putExtra(DetailActivity.EXTRA_ID, item.id)
+//                it.putExtra(DetailActivity.EXTRA_NAME, item.name)
+//                it.putExtra(DetailActivity.EXTRA_DESC, item.description)
+//                it.putExtra(DetailActivity.EXTRA_PICT, item.photoUrl)
+//            }
+//            holder.itemView.context.startActivity(detailIntent)
+//        }
     }
 
     interface OnItemClickCallback {

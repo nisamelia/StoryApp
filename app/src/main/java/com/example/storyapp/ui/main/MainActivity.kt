@@ -17,6 +17,7 @@ import com.example.storyapp.ui.factory.StoryViewModelFactory
 import com.example.storyapp.data.response.ListStoryItem
 import com.example.storyapp.databinding.ActivityMainBinding
 import com.example.storyapp.ui.add.AddStoryActivity
+import com.example.storyapp.ui.maps.MapsActivity
 import com.example.storyapp.ui.welcome.WelcomeActivity
 
 class MainActivity : AppCompatActivity() {
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
 
         val layoutManager = LinearLayoutManager(this)
@@ -56,21 +58,22 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
             } else {
-                mainViewModel.setStories()
+                getData()
             }
         }
-
-        mainViewModel.story.observe(this) { storyResponse ->
-            if (!storyResponse.error) {
-                adapter.submitList(storyResponse.listStory)
-            } else {
-                Toast.makeText(
-                    this,
-                    storyResponse.message ?: "Error fetching stories",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+//
+//        mainViewModel.story.observe(this) { storyResponse ->
+//            if (!storyResponse.error) {
+//                adapter.submitList(storyResponse.listStory)
+//            } else {
+//                Toast.makeText(
+//                    this,
+//                    storyResponse.message ?: "Error fetching stories",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//        }
+//        getData()
         setupView()
         setupAction()
 
@@ -106,13 +109,24 @@ class MainActivity : AppCompatActivity() {
                         mainViewModel.logout()
                         true
                     }
-
+                    R.id.btnMap -> {
+                        startActivity(Intent(this@MainActivity, MapsActivity::class.java))
+                        true
+                    }
                     else -> {
                         false
                     }
                 }
             }
         })
+    }
+
+    private fun getData() {
+        val adapter = UserAdapter()
+        binding.rvStory.adapter = adapter
+        mainViewModel.story.observe(this) {
+            adapter.submitData(lifecycle, it)
+        }
     }
 
 }

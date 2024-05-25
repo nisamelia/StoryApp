@@ -46,6 +46,8 @@ class DetailActivity : AppCompatActivity() {
                 storyResponse.story?.let { story ->
                     binding.tvDetailName.text = story.name
                     binding.tvDetailDescription.text = story.description
+                    binding.tvDetailLong.text = story.lon.toString()
+                    binding.tvDetailLat.text = story.lat.toString()
                     Glide.with(binding.ivDetailPhoto.context)
                         .load(story.photoUrl)
                         .into(binding.ivDetailPhoto)

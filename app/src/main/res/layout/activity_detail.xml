@@ -63,6 +63,30 @@
                 android:textSize="14dp"
                 android:layout_marginTop="4dp" />
 
+            <TextView
+                android:id="@+id/tv_detail_lat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="viewStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_detail_description"
+                app:layout_constraintHorizontal_bias="0.5"
+                android:textSize="14dp"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/tv_detail_long"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="viewStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_detail_lat"
+                app:layout_constraintHorizontal_bias="0.5"
+                android:textSize="14dp"
+                android:layout_marginTop="4dp" />
+
             <ProgressBar
                 android:id="@+id/detailProgress"
                 style="?android:attr/progressBarStyle"
