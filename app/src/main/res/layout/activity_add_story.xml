@@ -42,7 +42,8 @@
             android:src="@color/grey"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/progressIndicator" />
+            app:layout_constraintTop_toBottomOf="@id/progressIndicator"
+            android:contentDescription="@string/img_list"/>
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/ed_add_description"

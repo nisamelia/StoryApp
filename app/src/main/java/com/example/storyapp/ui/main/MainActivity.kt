@@ -45,14 +45,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-//        mainViewModel.isLoading.observe(this) { isLoading ->
-//            if (isLoading) {
-//                binding.listProgress.visibility = View.VISIBLE
-//            } else {
-//                binding.listProgress.visibility = View.GONE
-//            }
-//
-//        }
         mainViewModel.getSession().observe(this) { user ->
             if (!user.isLogin) {
                 startActivity(Intent(this, WelcomeActivity::class.java))
@@ -61,24 +53,16 @@ class MainActivity : AppCompatActivity() {
                 getData()
             }
         }
-//
-//        mainViewModel.story.observe(this) { storyResponse ->
-//            if (!storyResponse.error) {
-//                adapter.submitList(storyResponse.listStory)
-//            } else {
-//                Toast.makeText(
-//                    this,
-//                    storyResponse.message ?: "Error fetching stories",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//            }
-//        }
-//        getData()
+
         setupView()
         setupAction()
 
         adapter = UserAdapter()
-        binding.rvStory.adapter = adapter
+        binding.rvStory.adapter = adapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                adapter.retry()
+            }
+        )
         adapter.setOnItemClickCallback(object : UserAdapter.OnItemClickCallback {
             override fun onItemClicked(data: ListStoryItem) {
 
@@ -109,10 +93,12 @@ class MainActivity : AppCompatActivity() {
                         mainViewModel.logout()
                         true
                     }
+
                     R.id.btnMap -> {
                         startActivity(Intent(this@MainActivity, MapsActivity::class.java))
                         true
                     }
+
                     else -> {
                         false
                     }

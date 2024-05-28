@@ -6,12 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.viewModels
-import com.bumptech.glide.load.engine.Resource
 import com.example.storyapp.R
-import com.example.storyapp.data.response.ListStoryItem
-
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -20,7 +16,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.example.storyapp.databinding.ActivityMapsBinding
 import com.example.storyapp.ui.factory.StoryViewModelFactory
-import com.example.storyapp.ui.main.MainViewModel
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 
@@ -37,24 +32,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         menuInflater.inflate(R.menu.map_options, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.normal_type -> {
                 mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
                 true
             }
+
             R.id.satellite_type -> {
                 mMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
                 true
             }
+
             R.id.terrain_type -> {
                 mMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
                 true
             }
+
             R.id.hybrid_type -> {
                 mMap.mapType = GoogleMap.MAP_TYPE_HYBRID
                 true
             }
+
             else -> {
                 super.onOptionsItemSelected(item)
             }
@@ -82,89 +82,66 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-//    override fun onMapReady(googleMap: GoogleMap) {
-//        mMap = googleMap
-//
-//        // Add a marker in Sydney and move the camera
-//        val sydney = LatLng(-34.0, 151.0)
-//        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-//        mMap.uiSettings.isZoomControlsEnabled = true
-//        mMap.uiSettings.isIndoorLevelPickerEnabled = true
-//        mMap.uiSettings.isCompassEnabled = true
-//        mMap.uiSettings.isMapToolbarEnabled = true
 
-        override fun onMapReady(googleMap: GoogleMap) {
-            mMap = googleMap
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
 
-            mMap.uiSettings.isZoomControlsEnabled = true
-            mMap.uiSettings.isIndoorLevelPickerEnabled = true
-            mMap.uiSettings.isCompassEnabled = true
-            mMap.uiSettings.isMapToolbarEnabled = true
+        mMap.uiSettings.isZoomControlsEnabled = true
+        mMap.uiSettings.isIndoorLevelPickerEnabled = true
+        mMap.uiSettings.isCompassEnabled = true
+        mMap.uiSettings.isMapToolbarEnabled = true
 
-            // Move the camera to a default location
-            val defaultLocation = LatLng(-34.0, 151.0)
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(defaultLocation))
-            mainViewModel.setMarkers()
-            mainViewModel.story.observe(this) { storyResponse ->
-                if (!storyResponse.error) {
-                    mMap.clear()
-                    val data = storyResponse.listStory
-                    data.forEach { item ->
-                        val latLng = LatLng(item.lat, item.lon)
-                        mMap.addMarker(
-                            MarkerOptions()
-                                .position(latLng)
-                                .title(item.name)
-                                .snippet(item.description)
-                        )
-                        boundsBuilder.include(latLng)
-                    }
-                    val bounds: LatLngBounds = boundsBuilder.build()
-                    mMap.animateCamera(
-                        CameraUpdateFactory.newLatLngBounds(
-                            bounds,
-                            resources.displayMetrics.widthPixels,
-                            resources.displayMetrics.heightPixels,
-                            300
-                        )
+        // Move the camera to a default location
+        val defaultLocation = LatLng(-34.0, 151.0)
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(defaultLocation))
+        mainViewModel.setMarkers()
+        mainViewModel.story.observe(this) { storyResponse ->
+            if (!storyResponse.error) {
+                mMap.clear()
+                val data = storyResponse.listStory
+                data.forEach { item ->
+                    val latLng = LatLng(item.lat, item.lon)
+                    mMap.addMarker(
+                        MarkerOptions()
+                            .position(latLng)
+                            .title(item.name)
+                            .snippet(item.description)
                     )
-                } else {
-                    showError(storyResponse.message)
+                    boundsBuilder.include(latLng)
                 }
+                val bounds: LatLngBounds = boundsBuilder.build()
+                mMap.animateCamera(
+                    CameraUpdateFactory.newLatLngBounds(
+                        bounds,
+                        resources.displayMetrics.widthPixels,
+                        resources.displayMetrics.heightPixels,
+                        300
+                    )
+                )
+            } else {
+                showError()
             }
-        setMapStyle()
         }
-    private fun setMapStyle(){
+        setMapStyle()
+    }
+
+    private fun setMapStyle() {
         try {
-            val success = mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style))
-            if (!success){
+            val success =
+                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style))
+            if (!success) {
                 Log.e(TAG, "Style parsing failed")
             }
         } catch (exception: Resources.NotFoundException) {
             Log.e(TAG, "Cant find style. Error: ", exception)
         }
     }
+
     companion object {
         private const val TAG = "MapsActivity"
     }
-    }
+}
 
-//    private fun updateMapMarkers(data: List<ListStoryItem>) {
-//        mMap.clear()  // Clear existing markers
-//        data.forEach { data ->
-//            val latLng = LatLng(data.lat, data.lon)
-//            mMap.addMarker(
-//                MarkerOptions()
-//                    .position(latLng)
-//                    .title(data.name)
-//                    .snippet(data.description)
-//            )
-//        }
-//    }
+private fun showError() {
 
-    private fun showError(message: String?) {
-        // Show error message to the user
-    }
-
-//}
+}

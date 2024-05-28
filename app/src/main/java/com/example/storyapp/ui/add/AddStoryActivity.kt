@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.storyapp.data.api.ApiConfig
@@ -104,19 +103,24 @@ class AddStoryActivity : AppCompatActivity() {
                 .addOnSuccessListener { location: Location? ->
                     if (location != null) {
                         myLocation = location
-                        Toast.makeText(this, "Location: ${location.latitude}, ${location.longitude}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this,
+                            "Koordinat : ${location.latitude}, ${location.longitude}",
+                            Toast.LENGTH_LONG
+                        ).show()
                     } else {
-                        Toast.makeText(this, "Location not available", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Lokasi Tidak Tesedia", Toast.LENGTH_LONG).show()
                     }
-                }  .addOnFailureListener { exception ->
+                }.addOnFailureListener { exception ->
                     Toast.makeText(
                         this,
-                        "Failed to get location: ${exception.message}",
+                        "Gagal Mendapatkan Lokasi: ${exception.message}",
                         Toast.LENGTH_LONG
                     ).show()
                 }
         } else {
             requestLocationLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            requestLocationLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
         }
     }
 
@@ -156,46 +160,54 @@ class AddStoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun startUpload() {
-        currentImageUri?.let { uri ->
-            val imageFile = uriToFile(uri, this).reduceFileImage()
-            Log.d("Image File", "showImage: ${imageFile.path}")
-            val description = binding.edAddDescription.text.toString()
-            showLoading(true)
+private fun startUpload() {
+    currentImageUri?.let { uri ->
+        val imageFile = uriToFile(uri, this)
+        val isReduced = imageFile.reduceFileImage()
 
-            val requestBody = description.toRequestBody("text/plain".toMediaType())
-            val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
-            val multipartBody = MultipartBody.Part.createFormData(
-                "photo",
-                imageFile.name,
-                requestImageFile
-            )
+        if (!isReduced) {
+            showToast("Gambar Terlalu Besar Untuk Diunggah")
+            return
+        }
 
-            lifecycleScope.launch {
-                try {
-                    val userPreferences = UserPreferences.getInstance(dataStore)
-                    val token = userPreferences.getSession().first().token
-                    val lat = myLocation?.latitude
-                    val long = myLocation?.longitude
+        Log.d("Image File", "showImage: ${imageFile.path}")
+        val description = binding.edAddDescription.text.toString()
+        showLoading(true)
 
-                    if (token.isNotEmpty()) {
-                        val apiService = ApiConfig.getApiService(token)
-                        val successResponse = apiService.uploadImage(multipartBody, requestBody, lat, long)
-                        showToast(successResponse.message)
-                        showLoading(false)
-                    } else {
-                        showToast("Token is missing")
-                    }
-                } catch (e: HttpException) {
-                    val errorBody = e.response()?.errorBody()?.string()
-                    val errorResponse = Gson().fromJson(errorBody, AddStoryResponse::class.java)
-                    showToast(errorResponse.message)
+        val requestBody = description.toRequestBody("text/plain".toMediaType())
+        val requestImageFile = imageFile.asRequestBody("image/jpeg".toMediaType())
+        val multipartBody = MultipartBody.Part.createFormData(
+            "photo",
+            imageFile.name,
+            requestImageFile
+        )
+
+        lifecycleScope.launch {
+            try {
+                val userPreferences = UserPreferences.getInstance(dataStore)
+                val token = userPreferences.getSession().first().token
+                val lat = myLocation?.latitude
+                val long = myLocation?.longitude
+
+                if (token.isNotEmpty()) {
+                    val apiService = ApiConfig.getApiService(token)
+                    val successResponse =
+                        apiService.uploadImage(multipartBody, requestBody, lat, long)
+                    showToast(successResponse.message)
                     showLoading(false)
+                    moveMain()
+                } else {
+                    showToast("Autentikasi Gagal")
                 }
-                moveMain()
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val errorResponse = Gson().fromJson(errorBody, AddStoryResponse::class.java)
+                showToast(errorResponse.message)
+                showLoading(false)
             }
-        } ?: showToast("Kosong")
-    }
+        }
+    } ?: showToast("Isi dulu datanya ya!")
+}
 
     private fun moveMain() {
         val intent = Intent(this, MainActivity::class.java)
@@ -213,6 +225,5 @@ class AddStoryActivity : AppCompatActivity() {
 
     companion object {
         private const val REQUIRED_PERMISSION = Manifest.permission.CAMERA
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
     }
 }

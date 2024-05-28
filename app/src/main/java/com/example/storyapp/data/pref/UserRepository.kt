@@ -16,7 +16,6 @@ class UserRepository private constructor(
         return try {
             apiService.register(name, email, password)
         } catch (e: HttpException) {
-            // Handle exceptions like network errors
             Log.e("SendRegistrationData", "Error sending registration data: ${e.message}")
             RegisterResponse(message = "Failed to send registration data")
 

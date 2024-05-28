@@ -10,14 +10,12 @@ import androidx.paging.PagingState
 import androidx.recyclerview.widget.ListUpdateCallback
 import com.example.storyapp.DataDummy
 import com.example.storyapp.MainDispatcherRule
-import com.example.storyapp.data.paging.StoryPagingSource
 import com.example.storyapp.data.pref.StoryRepository
 import com.example.storyapp.data.response.ListStoryItem
 import com.example.storyapp.getOrAwaitValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -56,9 +54,9 @@ class MainViewModelTest {
         )
         differ.submitData(actualStory)
 
-        Assert.assertNotNull(differ.snapshot())
-        Assert.assertEquals(dummyStory.size, differ.snapshot().size)
-        Assert.assertEquals(dummyStory[0], differ.snapshot()[0])
+        assertNotNull(differ.snapshot())
+        assertEquals(dummyStory.size, differ.snapshot().size)
+        assertEquals(dummyStory[0], differ.snapshot()[0])
     }
 
     @Test
@@ -77,7 +75,7 @@ class MainViewModelTest {
         )
         differ.submitData(actualStory)
 
-        Assert.assertEquals(0, differ.snapshot().size)
+        assertEquals(0, differ.snapshot().size)
     }
 
     val noopListUpdateCallback = object : ListUpdateCallback {
@@ -94,7 +92,7 @@ class StoryPagingSource: PagingSource<Int, LiveData<List<ListStoryItem>>>(){
             return PagingData.from(items)
         }
     }
-    override fun getRefreshKey(state: PagingState<Int, LiveData<List<ListStoryItem>>>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, LiveData<List<ListStoryItem>>>): Int {
         return 0
     }
 

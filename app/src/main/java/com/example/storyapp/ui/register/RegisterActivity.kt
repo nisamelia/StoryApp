@@ -38,9 +38,23 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
-        registerViewModel.errorReg.observe(this) { isError: String ->
+        registerViewModel.errorReg.observe(this) {isError ->
             Toast.makeText(this, isError, Toast.LENGTH_SHORT).show()
         }
+
+        registerViewModel.registerResult.observe(this) { response ->
+            response?.let {
+                if (it.error != null && !it.error) {
+                    showSuccessDialog()
+                } else {
+                    val errorMessage = it.message ?: "Error occurred"
+                    showToast(errorMessage)
+                }
+            } ?: run {
+                showToast("Unexpected error")
+            }
+        }
+
     }
 
     private fun playAnimation() {
@@ -65,24 +79,10 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun setupAction() {
-    binding.signupButton.setOnClickListener {
-        postRegister()
-
-        // Observe the register result
-        registerViewModel.registerResult.observe(this) { response ->
-            if (response != null) {
-                if (!response.error!!) {
-                    showSuccessDialog()
-                } else {
-                    val errorMessage = response.message ?: "Error occurred"
-                    showToast(errorMessage)
-                }
-            } else {
-                showToast("Unexpected error")
-            }
+        binding.signupButton.setOnClickListener {
+            postRegister()
         }
     }
-}
 
     private fun loginActivity() {
         startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
@@ -93,7 +93,7 @@ class RegisterActivity : AppCompatActivity() {
         val email = binding.edRegisterEmail.text.toString()
         AlertDialog.Builder(this).apply {
             setTitle("Yeah!")
-            setMessage("Akun dengan $email sudah jadi nih. Yuk, login dan belajar coding.")
+            setMessage("Akun dengan $email sudah jadi nih. Yuk, login dan unggah storymu.")
             setPositiveButton("Lanjut") { _, _ ->
                 loginActivity()
                 finish()

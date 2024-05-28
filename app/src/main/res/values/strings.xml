@@ -27,4 +27,10 @@
     <string name="satellite_type">Satellite</string>
     <string name="hybrid_type">Hybrid Maps</string>
     <string name="terrain_type">Terrain Maps</string>
+    <string name="retry">Muat Ulang</string>
+    <string name="img_welcome">Selamat Datang</string>
+    <string name="img_regis">Resgistrasi Dahulu</string>
+    <string name="img_login">Login Dahulu</string>
+    <string name="img_detail">Gambar Story Detail</string>
+    <string name="img_list">Gambar Story List</string>
 </resources>

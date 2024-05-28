@@ -1,6 +1,5 @@
 package com.example.storyapp.ui.maps
 
-import android.net.http.HttpException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

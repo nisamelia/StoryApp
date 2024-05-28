@@ -10,7 +10,6 @@ import com.example.storyapp.data.model.UserModel
 import com.example.storyapp.data.paging.StoryPagingSource
 import com.example.storyapp.data.response.DetailResponse
 import com.example.storyapp.data.response.ListStoryItem
-import com.example.storyapp.data.response.Story
 import com.example.storyapp.data.response.StoryResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -18,10 +17,7 @@ class StoryRepository private constructor(
     private val apiService: ApiService,
     private val userPreferences: UserPreferences
 ) {
-//    suspend fun setStories() : StoryResponse {
-//        return apiService.getStories()
-//    }
-    fun setStories(): LiveData<PagingData<ListStoryItem>>{
+    fun setStories(): LiveData<PagingData<ListStoryItem>> {
         return Pager(
             config = PagingConfig(
                 pageSize = 5
@@ -32,7 +28,7 @@ class StoryRepository private constructor(
         ).liveData
     }
 
-    suspend fun setDetail(id : String) : DetailResponse {
+    suspend fun setDetail(id: String): DetailResponse {
         return apiService.getDetail(id)
     }
 
@@ -43,9 +39,10 @@ class StoryRepository private constructor(
     suspend fun logout() {
         userPreferences.logout()
     }
-suspend fun setMap(location: Int = 1): StoryResponse {
-    return apiService.getStoriesWithLocation(location)
-}
+
+    suspend fun setMap(location: Int = 1): StoryResponse {
+        return apiService.getStoriesWithLocation(location)
+    }
 
     companion object {
         fun getInstance(

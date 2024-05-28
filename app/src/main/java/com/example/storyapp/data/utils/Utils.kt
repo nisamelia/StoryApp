@@ -71,8 +71,7 @@ fun uriToFile(imageUri: Uri, context: Context): File {
     return myFile
 }
 
-//reduce image size
-fun File.reduceFileImage(): File {
+fun File.reduceFileImage(): Boolean {
     val file = this
     val bitmap = BitmapFactory.decodeFile(file.path).getRotatedBitmap(file)
     var compressQuality = 100
@@ -83,9 +82,16 @@ fun File.reduceFileImage(): File {
         val bmpPicByteArray = bmpStream.toByteArray()
         streamLength = bmpPicByteArray.size
         compressQuality -= 5
-    } while (streamLength > MAX_SIZE)
-    bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, FileOutputStream(file))
-    return file
+    } while (streamLength > MAX_SIZE && compressQuality > 0)
+
+    return if (streamLength <= MAX_SIZE) {
+        // Compression was successful, save the bitmap to file
+        bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, FileOutputStream(file))
+        true
+    } else {
+        // Compression failed, the image is too large
+        false
+    }
 }
 
 fun Bitmap.getRotatedBitmap(file: File): Bitmap {
