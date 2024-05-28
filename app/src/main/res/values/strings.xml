@@ -20,4 +20,11 @@
     <string name="permission_granted">Kamera Diizinkan</string>
     <string name="permission_denied">Kamera Tidak Diizinkan</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="get_location">Get Location</string>
+    <string name="extra_long">Longitude: %1$s</string>
+    <string name="extra_lat">Latitude: %1$s</string>
+    <string name="normal_type">Normal</string>
+    <string name="satellite_type">Satellite</string>
+    <string name="hybrid_type">Hybrid Maps</string>
+    <string name="terrain_type">Terrain Maps</string>
 </resources>

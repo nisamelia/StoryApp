@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.example.storyapp.R
 import com.example.storyapp.ui.factory.StoryViewModelFactory
 import com.example.storyapp.databinding.ActivityDetailBinding
 
@@ -46,8 +47,11 @@ class DetailActivity : AppCompatActivity() {
                 storyResponse.story?.let { story ->
                     binding.tvDetailName.text = story.name
                     binding.tvDetailDescription.text = story.description
-                    binding.tvDetailLong.text = story.lon.toString()
-                    binding.tvDetailLat.text = story.lat.toString()
+
+                    val txtLong = story.lon?.toString() ?: "-"
+                    val txtLat = story.lat?.toString() ?: "-"
+                    binding.tvDetailLong.text = getString(R.string.extra_long, txtLong)
+                    binding.tvDetailLat.text = getString(R.string.extra_lat, txtLat)
                     Glide.with(binding.ivDetailPhoto.context)
                         .load(story.photoUrl)
                         .into(binding.ivDetailPhoto)

@@ -1,9 +1,14 @@
 package com.example.storyapp.ui.maps
 
+import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
+import com.bumptech.glide.load.engine.Resource
 import com.example.storyapp.R
 import com.example.storyapp.data.response.ListStoryItem
 
@@ -17,6 +22,7 @@ import com.example.storyapp.databinding.ActivityMapsBinding
 import com.example.storyapp.ui.factory.StoryViewModelFactory
 import com.example.storyapp.ui.main.MainViewModel
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val mainViewModel by viewModels<MapsViewModel> {
@@ -26,6 +32,34 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     private val boundsBuilder = LatLngBounds.Builder()
     private lateinit var binding: ActivityMapsBinding
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.map_options, menu)
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.normal_type -> {
+                mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+                true
+            }
+            R.id.satellite_type -> {
+                mMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
+                true
+            }
+            R.id.terrain_type -> {
+                mMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
+                true
+            }
+            R.id.hybrid_type -> {
+                mMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +133,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     showError(storyResponse.message)
                 }
             }
+        setMapStyle()
         }
+    private fun setMapStyle(){
+        try {
+            val success = mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style))
+            if (!success){
+                Log.e(TAG, "Style parsing failed")
+            }
+        } catch (exception: Resources.NotFoundException) {
+            Log.e(TAG, "Cant find style. Error: ", exception)
+        }
+    }
+    companion object {
+        private const val TAG = "MapsActivity"
+    }
     }
 
 //    private fun updateMapMarkers(data: List<ListStoryItem>) {
@@ -118,4 +166,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun showError(message: String?) {
         // Show error message to the user
     }
+
 //}

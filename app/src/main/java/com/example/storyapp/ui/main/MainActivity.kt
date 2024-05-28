@@ -45,14 +45,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        mainViewModel.isLoading.observe(this) { isLoading ->
-            if (isLoading) {
-                binding.listProgress.visibility = View.VISIBLE
-            } else {
-                binding.listProgress.visibility = View.GONE
-            }
-
-        }
+//        mainViewModel.isLoading.observe(this) { isLoading ->
+//            if (isLoading) {
+//                binding.listProgress.visibility = View.VISIBLE
+//            } else {
+//                binding.listProgress.visibility = View.GONE
+//            }
+//
+//        }
         mainViewModel.getSession().observe(this) { user ->
             if (!user.isLogin) {
                 startActivity(Intent(this, WelcomeActivity::class.java))
